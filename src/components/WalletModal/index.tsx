@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ReactGA from 'react-ga'
 import styled from 'styled-components'
-import { isMobile } from 'react-device-detect'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import usePrevious from '../../hooks/usePrevious'
 import { useWalletModalOpen, useWalletModalToggle } from '../../state/application/hooks'
@@ -9,14 +8,14 @@ import { useWalletModalOpen, useWalletModalToggle } from '../../state/applicatio
 import Modal from '../Modal'
 import AccountDetails from '../AccountDetails'
 import PendingView from './PendingView'
-import Option from './Option'
 import { SUPPORTED_WALLETS } from '../../constants'
 import { ExternalLink } from '../../theme'
-import MetamaskIcon from '../../assets/images/metamask.png'
 import { ReactComponent as Close } from '../../assets/images/x.svg'
-import { injected, fortmatic, portis } from '../../connectors'
+import { fortmatic } from '../../connectors'
 import { OVERLAY_READY } from '../../connectors/Fortmatic'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
+
+import { connectRLogin } from '../../connectors/RLoginConnector'
 
 const CloseIcon = styled.div`
   position: absolute;
@@ -89,15 +88,6 @@ const Blurb = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin: 1rem;
     font-size: 12px;
-  `};
-`
-
-const OptionGrid = styled.div`
-  display: grid;
-  grid-gap: 10px;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    grid-template-columns: 1fr;
-    grid-gap: 10px;
   `};
 `
 
@@ -192,98 +182,33 @@ export default function WalletModal({
     })
   }
 
+  // connect with rLogin
+  const connectWithRLogin = useCallback(() => {
+    toggleWalletModal()
+
+    return connectRLogin()
+      .then((connector: any) => connector && tryActivation(connector))
+      .catch(() => {
+        toggleWalletModal()
+        setPendingError(true)
+      })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggleWalletModal])
+
+  // show rLogin modal instead of WalletModal selection options:
+  useEffect(() => {
+    if (!account && walletModalOpen) {
+      connectWithRLogin()
+    }
+  }, [account, toggleWalletModal, walletModalOpen, connectWithRLogin])
+
   // close wallet modal if fortmatic modal is active
   useEffect(() => {
     fortmatic.on(OVERLAY_READY, () => {
       toggleWalletModal()
     })
   }, [toggleWalletModal])
-
-  // get wallets user can switch too, depending on device/browser
-  function getOptions() {
-    const isMetamask = window.ethereum && window.ethereum.isMetaMask
-    return Object.keys(SUPPORTED_WALLETS).map(key => {
-      const option = SUPPORTED_WALLETS[key]
-      // check for mobile options
-      if (isMobile) {
-        //disable portis on mobile for now
-        if (option.connector === portis) {
-          return null
-        }
-
-        if (!window.web3 && !window.ethereum && option.mobile) {
-          return (
-            <Option
-              onClick={() => {
-                option.connector !== connector && !option.href && tryActivation(option.connector)
-              }}
-              id={`connect-${key}`}
-              key={key}
-              active={option.connector && option.connector === connector}
-              color={option.color}
-              link={option.href}
-              header={option.name}
-              subheader={null}
-              icon={require('../../assets/images/' + option.iconName)}
-            />
-          )
-        }
-        return null
-      }
-
-      // overwrite injected when needed
-      if (option.connector === injected) {
-        // don't show injected if there's no injected provider
-        if (!(window.web3 || window.ethereum)) {
-          if (option.name === 'MetaMask') {
-            return (
-              <Option
-                id={`connect-${key}`}
-                key={key}
-                color={'#E8831D'}
-                header={'Install Metamask'}
-                subheader={null}
-                link={'https://metamask.io/'}
-                icon={MetamaskIcon}
-              />
-            )
-          } else {
-            return null //dont want to return install twice
-          }
-        }
-        // don't return metamask if injected provider isn't metamask
-        else if (option.name === 'MetaMask' && !isMetamask) {
-          return null
-        }
-        // likewise for generic
-        else if (option.name === 'Injected' && isMetamask) {
-          return null
-        }
-      }
-
-      // return rest of options
-      return (
-        !isMobile &&
-        !option.mobileOnly && (
-          <Option
-            id={`connect-${key}`}
-            onClick={() => {
-              option.connector === connector
-                ? setWalletView(WALLET_VIEWS.ACCOUNT)
-                : !option.href && tryActivation(option.connector)
-            }}
-            key={key}
-            active={option.connector === connector}
-            color={option.color}
-            link={option.href}
-            header={option.name}
-            subheader={null} //use option.descriptio to bring back multi-line
-            icon={require('../../assets/images/' + option.iconName)}
-          />
-        )
-      )
-    })
-  }
 
   function getModalContent() {
     if (error) {
@@ -310,10 +235,11 @@ export default function WalletModal({
           pendingTransactions={pendingTransactions}
           confirmedTransactions={confirmedTransactions}
           ENSName={ENSName}
-          openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+          openOptions={() => connectWithRLogin()}
         />
       )
     }
+
     return (
       <UpperSection>
         <CloseIcon onClick={toggleWalletModal}>
@@ -336,15 +262,13 @@ export default function WalletModal({
           </HeaderRow>
         )}
         <ContentWrapper>
-          {walletView === WALLET_VIEWS.PENDING ? (
+          {walletView === WALLET_VIEWS.PENDING && (
             <PendingView
               connector={pendingWallet}
               error={pendingError}
               setPendingError={setPendingError}
               tryActivation={tryActivation}
             />
-          ) : (
-            <OptionGrid>{getOptions()}</OptionGrid>
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
             <Blurb>
