@@ -16,7 +16,8 @@ export const rLogin = new RLogin({
         rpc: {
           30: 'https://public-node.rsk.co',
           31: 'https://public-node.testnet.rsk.co'
-        }
+        },
+        bridge: 'https://walletconnect-bridge.rifos.org'
       }
     }
   },
