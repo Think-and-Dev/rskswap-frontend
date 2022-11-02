@@ -11,16 +11,16 @@ import { RowBetween } from '../Row'
 import QuestionHelper from '../QuestionHelper'
 
 const tabOrder = [
-  {
-    path: '/swap',
-    textKey: 'swap',
-    regex: /\/swap/
-  },
-  {
-    path: '/send',
-    textKey: 'send',
-    regex: /\/send/
-  },
+  // {
+  //   path: '/swap',
+  //   textKey: 'swap',
+  //   regex: /\/swap/
+  // },
+  // {
+  //   path: '/send',
+  //   textKey: 'send',
+  //   regex: /\/send/
+  // },
   {
     path: '/pool',
     textKey: 'pool',

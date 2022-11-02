@@ -17,7 +17,7 @@ import PoolFinder from './PoolFinder'
 import RemoveLiquidity from './RemoveLiquidity'
 import Send from './Send'
 import Swap from './Swap'
-import { RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
+import { RedirectPathToPoolOnly, RedirectToSwap } from './Swap/redirects'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -75,18 +75,18 @@ export default function App() {
             <Popups />
             <Web3ReactManager>
               <Switch>
-                <Route exact strict path="/swap" component={Swap} />
-                <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
-                <Route exact strict path="/send" component={Send} />
+                {/* <Route exact strict path="/swap" component={Swap} /> */}
+                {/* <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} /> */}
+                {/* <Route exact strict path="/send" component={Send} /> */}
                 <Route exact strict path="/find" component={PoolFinder} />
                 <Route exact strict path="/pool" component={Pool} />
-                <Route exact strict path="/create" component={CreatePool} />
-                <Route exact strict path="/add/:tokens" component={AddLiquidity} />
+                {/* <Route exact strict path="/create" component={CreatePool} /> */}
+                {/* <Route exact strict path="/add/:tokens" component={AddLiquidity} /> */}
                 <Route exact strict path="/remove/:tokens" component={RemoveLiquidity} />
                 {/* <Route exact strict path="/migrate/v1" component={MigrateV1} />
                 <Route exact strict path="/migrate/v1/:address" component={MigrateV1Exchange} />
                 <Route exact strict path="/remove/v1/:address" component={RemoveV1Exchange} /> */}
-                <Route component={RedirectPathToSwapOnly} />
+                <Route component={RedirectPathToPoolOnly} />
               </Switch>
             </Web3ReactManager>
             <Marginer />

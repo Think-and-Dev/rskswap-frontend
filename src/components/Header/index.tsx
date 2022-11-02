@@ -145,14 +145,7 @@ export default function Header() {
   return (
     <HeaderFrame>
       <MigrateBanner>
-        RSK Swap is live! Read the&nbsp;
-        <ExternalLink href="https://rskswap.com/docs/v2/">
-          <b>documentation ↗</b>
-        </ExternalLink>
-        &nbsp;RSK Swap is a fork of the &nbsp;
-        <ExternalLink href="https://uniswap.org/">
-          <b>Uniswap V2 Protocol ↗</b>
-        </ExternalLink>
+        RSK Swap is &nbsp;<b>sunseting</b>, please remove your funds.
       </MigrateBanner>
       <RowBetween padding="1rem">
         <HeaderElement>

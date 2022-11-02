@@ -74,7 +74,7 @@ export default function Pool({ history }: RouteComponentProps) {
   return (
     <AppBody>
       <AutoColumn gap="lg" justify="center">
-        <ButtonPrimary
+        {/* <ButtonPrimary
           id="join-pool-button"
           padding="16px"
           onClick={() => {
@@ -84,7 +84,7 @@ export default function Pool({ history }: RouteComponentProps) {
           <Text fontWeight={500} fontSize={20}>
             Join {allV2PairsWithLiquidity?.length > 0 ? 'another' : 'a'} pool
           </Text>
-        </ButtonPrimary>
+        </ButtonPrimary> */}
 
         <Positions>
           <AutoColumn gap="12px">
@@ -127,11 +127,11 @@ export default function Pool({ history }: RouteComponentProps) {
             </div>
           </AutoColumn>
           <FixedBottom>
-            <ColumnCenter>
+            {/* <ColumnCenter>
               <ButtonSecondary width="136px" padding="8px" borderRadius="10px" onClick={() => history.push('/create')}>
                 + Create Pool
               </ButtonSecondary>
-            </ColumnCenter>
+            </ColumnCenter> */}
           </FixedBottom>
         </Positions>
         <PairSearchModal isOpen={showPoolSearch} onDismiss={handleSearchDismiss} />

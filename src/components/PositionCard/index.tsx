@@ -204,16 +204,16 @@ function PositionCard({ pair, history, border, minimal = false }: PositionCardPr
                 </ExternalLink>
               </AutoRow> */}
               <RowBetween marginTop="10px">
-                <ButtonSecondary
+                {/* <ButtonSecondary
                   width="48%"
                   onClick={() => {
                     history.push('/add/' + token0?.address + '-' + token1?.address)
                   }}
                 >
                   Add
-                </ButtonSecondary>
+                </ButtonSecondary> */}
                 <ButtonSecondary
-                  width="48%"
+                  // width="48%"
                   onClick={() => {
                     history.push('/remove/' + token0?.address + '-' + token1?.address)
                   }}
